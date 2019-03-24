@@ -1,0 +1,66 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemyAI : MonoBehaviour
+{
+    //variable for your speed
+    private float _speed = 3.0f;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //move down
+        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+        //when off the screen on the bottom
+        // when X is -7, move back to 7
+
+        //respawn back on top with a anew x position between bounds of the screen
+        // Y should be in between - 8 and 8
+        
+        if (transform.position.y < -7.0f) {
+            float randomX = Random.Range(-7.0f, 7.0f);
+            transform.position = new Vector3(randomX, 7.0f, 0);
+        }
+    }
+
+    // on collsion with the player,
+    // destroy self, decrement player life and destroy if life < 1
+    /**
+        laser will damage the enemy
+
+        the enemy will have to check for two different objects
+    */
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Debug.Log("Collided with " + other.name);
+
+        if (other.tag == "Player") 
+        {
+            //access the player
+            Player player = other.GetComponent<Player>();
+
+            // decrement player life
+            player.Damage();
+            Destroy(this.gameObject);
+
+        } else if (other.tag == "Laser") {
+            //destroy parent if it exists
+            if (other.transform.parent != null) 
+            {
+                Destroy(other.transform.parent.gameObject);
+            }
+
+            // destroy laser and kill self
+            Destroy(other.gameObject);
+            Destroy(this.gameObject);
+        }
+    }
+}
