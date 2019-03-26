@@ -38,8 +38,8 @@ public class Powerup : MonoBehaviour
                     player.SpeedBoostPowerupOn();
                 } else if (powerupId == 2) {
                     //enable shields
+                    player.ShieldPowerupOn();
                 }
-                
             }
 
             StartCoroutine(player.TripleShotPowerDownRoutine());

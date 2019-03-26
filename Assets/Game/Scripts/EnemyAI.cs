@@ -7,6 +7,9 @@ public class EnemyAI : MonoBehaviour
     //variable for your speed
     private float _speed = 3.0f;
 
+    [SerializeField]
+    private GameObject _enemyExplosionPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,6 +52,9 @@ public class EnemyAI : MonoBehaviour
 
             // decrement player life
             player.Damage();
+
+            // animate & destroy
+            Instantiate(_enemyExplosionPrefab, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
 
         } else if (other.tag == "Laser") {
@@ -60,6 +66,9 @@ public class EnemyAI : MonoBehaviour
 
             // destroy laser and kill self
             Destroy(other.gameObject);
+
+            // animate & destroy
+            Instantiate(_enemyExplosionPrefab, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
     }

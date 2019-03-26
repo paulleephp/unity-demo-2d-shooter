@@ -7,19 +7,24 @@ public class Player : MonoBehaviour
 
     public bool canTripleShot = false;
     public bool isSpeedBoostActive = false;
+    public bool isShieldActive = false;
+    public int lives = 3;
 
     [SerializeField]
     private GameObject _laserPrefab;
     [SerializeField]
     private GameObject _tripleShotPrefab;
     [SerializeField]
+    private GameObject _explosionPrefab;
+    [SerializeField]
+    private GameObject _shieldGameObject;
+
+    [SerializeField]
     private float _fireRate = 0.25f;
     private float _canFire = 0.0f;
 
     [SerializeField]
     private float _speed = 5.0f;
-
-    private int _lives = 3;
 
     private void Start()
     {
@@ -46,11 +51,6 @@ public class Player : MonoBehaviour
 
             if (canTripleShot == true) {
                 Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
-                //left
-                // Instantiate(_laserPrefab, transform.position + new Vector3(0.56f, 0.06f, 0), Quaternion.identity);
-                //right
-                // Instantiate(_laserPrefab, transform.position + new Vector3(-0.55f, 0.06f, 0), Quaternion.identity);
-                // Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.88f, 0), Quaternion.identity);
             } else {
                 // spawn laser at player position
                 Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.88f, 0), Quaternion.identity);
@@ -88,12 +88,20 @@ public class Player : MonoBehaviour
 
     public void Damage() 
     {
+        // if the shield is active, take away the shield.
+        if (isShieldActive) {
+            isShieldActive = false;
+            _shieldGameObject.SetActive(false);
+            return;
+        }
+
         // decrement 
-        _lives--;
+        lives--;
 
         // if life is less than 1, boom.
-        if (_lives < 1) 
+        if (lives < 1) 
         {
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
     }
@@ -119,6 +127,12 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5.0f);
         isSpeedBoostActive = false;
+    }   
+
+    public void ShieldPowerupOn() 
+    {
+        isShieldActive = true;
+        _shieldGameObject.SetActive(true);
     }   
 
 }
