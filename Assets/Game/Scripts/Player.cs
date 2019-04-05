@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     private GameObject _explosionPrefab;
     [SerializeField]
     private GameObject _shieldGameObject;
+    [SerializeField]
+    private GameObject[] _engines;
 
     [SerializeField]
     private float _fireRate = 0.25f;
@@ -26,10 +28,33 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _speed = 5.0f;
 
+    private UIManager _uiManager;
+    private GameManager _gameManager;
+    private SpawnManager _spawnManager;
+    private AudioSource _audioSource;
+
+    private int hitCount = 0;
+
     private void Start()
     {
         transform.position = new Vector3(0, 0, 0);
-        // transform.name
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
+        if (_uiManager != null)
+        {
+            _uiManager.UpdateLives(lives);
+        }
+
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+
+        //start spawning
+        _spawnManager.StartSpawning();
+
+        _audioSource = GetComponent<AudioSource>();
+
+        // reset the hit count
+        hitCount = 0;
     }
 
     // Update is called once per frame
@@ -48,6 +73,7 @@ public class Player : MonoBehaviour
     private void Shoot()
     {
         if (Time.time > _canFire) {
+            _audioSource.Play();
 
             if (canTripleShot == true) {
                 Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
@@ -95,13 +121,28 @@ public class Player : MonoBehaviour
             return;
         }
 
+        hitCount++;
+
+        if (hitCount == 1) {
+            // turn left engine_failure on
+            _engines[0].SetActive(true);
+        } else if (hitCount == 2) {
+            // turn right engine_failure on
+            _engines[1].SetActive(true);
+        }
+
         // decrement 
         lives--;
+        _uiManager.UpdateLives(lives);
 
         // if life is less than 1, boom.
         if (lives < 1) 
         {
             Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+
+            _gameManager.gameOver = true;
+            _uiManager.ShowTitle();
+            
             Destroy(this.gameObject);
         }
     }

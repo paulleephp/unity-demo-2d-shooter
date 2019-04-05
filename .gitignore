@@ -52,3 +52,5 @@ crashlytics-build.properties
 
 # IDE dirs
 .vscode
+.DS_Store
+

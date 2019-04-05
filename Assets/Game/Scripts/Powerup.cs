@@ -8,7 +8,10 @@ public class Powerup : MonoBehaviour
     private float _speed = 3.0f;
     [SerializeField]
     private int powerupId; // 0 = triple shot 1 = speed, 2 = shields
-    // Start is called before the first frame update
+
+    [SerializeField]
+    private AudioClip _clip;
+    
     void Start()
     {
         
@@ -18,6 +21,10 @@ public class Powerup : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+        if (transform.position.y < -7) {
+            Destroy(this.gameObject);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -43,6 +50,9 @@ public class Powerup : MonoBehaviour
             }
 
             StartCoroutine(player.TripleShotPowerDownRoutine());
+
+            AudioSource.PlayClipAtPoint(_clip, Camera.main.transform.position, 1f);
+
             //destory ourself
             Destroy(this.gameObject);
         }
